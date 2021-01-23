@@ -1,0 +1,151 @@
+/*
+ * This code is written by Divij Vignesh
+ * Check out his channel StupidCreativity - https://www.youtube.com/stupidcreativity
+*/
+#include <ESP8266WiFi.h>
+const char* ssid = "*****"; // replace your router or wifi SSID 
+const char* password = "*****"; // replace your router or wifi password 
+ #define LED 2// LED connected to  GPIO0
+WiFiServer server(80);
+ 
+void setup() 
+{
+  Serial.begin(9600); // must be same baudrate with the Serial Monitor
+ 
+  pinMode(LED,OUTPUT);
+  digitalWrite(LED, LOW);
+ 
+  // Connect to WiFi network
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+ 
+  WiFi.begin(ssid, password);
+ 
+  while (WiFi.status() != WL_CONNECTED) 
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+ 
+  // Start the server
+  server.begin();
+  Serial.println("Server started");
+ 
+  // Print the IP address
+  Serial.print("Use this URL to connect: ");
+  Serial.print("https://");
+  Serial.print(WiFi.localIP());
+  Serial.println("/");
+ 
+}
+ 
+void loop() 
+{
+  // Check if a client has connected
+  WiFiClient client = server.available();
+  if (!client) 
+  {
+    return;
+  }
+ 
+  // Wait until the client sends some data
+  Serial.println("new client");
+  while(!client.available())
+  {
+    delay(1);
+  }
+
+  // Read the first line of the request
+  String request = client.readStringUntil('\r');
+  Serial.println(request);
+  client.flush();
+ 
+  // Match the request
+  int value = LOW;
+  if (request.indexOf("/LED=OFF") != -1)  
+  {
+    Serial.println("LED=OFF");
+    digitalWrite(LED,LOW);
+    value = LOW;
+  }
+  if (request.indexOf("/LED=ON") != -1)  
+  {
+    Serial.println("LED=ON");
+    digitalWrite(LED,HIGH);
+    value = HIGH;
+  }
+  
+  // Return the response
+  client.println("HTTP/1.1 200 OK");
+  client.println("Content-Type: text/html");
+  client.println(""); //  this is a must
+  client.println("<!DOCTYPE HTML>");
+  client.println("<html>");
+  client.println("<head>");
+  client.println("<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
+  client.println("<style>");
+  client.println(".header{");
+  client.println("font-family:\"courier\";");
+  client.println("background-color:#04275ce8;");
+  client.println("padding:10px;");
+  client.println("max-width:100%;height:auto;");
+  client.println("}");
+  client.println(".header2{");
+  client.println("font-family:\"verdana\";");
+  client.println(" background-color:#a1e9c1;");
+  client.println(" text-align:center;");
+  client.println("max-width:100%;height:100%;");
+  client.println(" padding:10px;}");
+  client.println(".footer{");
+  client.println("background-color:#04275ce8;");
+  client.println("max-width:100%;height:100%;");
+  client.println("padding: 10px;}");
+  client.println("td{");
+  client.println("font-family: verdana;");
+  client.println("padding:10px}");
+  client.println("button{padding: 4px;");
+  client.println("border-radius: 10px;}");
+  client.println("a{");
+  client.println("text-decoration:none;}");
+  client.println("</style>");
+  client.println("</head>");
+  client.println("<body>");
+  client.println("<div class=\"header\">");
+  client.println("<h1 style=\"font-size:200%;color:rgb(252, 251, 250)\">ESP8266 LED CONTROL</h1></div>");
+  client.println("<div class=\"header2\">");
+  client.println("<table><tr>");
+  client.println("<td>The led is: </td>");
+  client.println("<td>");
+  if(value == HIGH) 
+  {
+    client.print("ON");
+  } 
+  else 
+  {
+    client.print("OFF");
+  }
+  client.println("</td>");
+  client.println("</tr><tr>");
+  client.println("<td><button type=button><a href=\"/LED=OFF\" >TURN OFF LED</a></button></td>");
+  client.println("<td><button type=button><a href=\"/LED=ON\" >TURN  ON LED</a></button></td>");
+  client.println(" </tr></table>");
+  client.println("</div>");
+  client.println("<div class=\"footer\">");
+  client.println("<table><tr>");
+  client.println("<td style=\"color:rgb(255, 255, 255);font-size: 70%;\">");
+  client.println("<a href=\"https://www.youtube.com/stupidcreativity\" target=\"_blank\" style=\"color:white;\">Created By:Divij Vignesh</a></td>");
+  client.println("<td style=\"color:rgb(255, 255, 255);font-size: 70%;\">");
+  client.println("<a href=\"https://www.youtube.com/stupidcreativity\" target=\"_blank\" style=\"color:white;\">Click Here: StupidCreativity</a></td>");
+  client.println("</tr></table>");
+  client.println("</div></body>");
+
+    client.println("</html>");
+ 
+  delay(1);
+  Serial.println("Client disonnected");
+  Serial.println("");
+}
