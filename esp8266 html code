@@ -5,7 +5,7 @@
 #include <ESP8266WiFi.h>
 const char* ssid = "*****"; // replace your router or wifi SSID 
 const char* password = "*****"; // replace your router or wifi password 
- #define LED 2// LED connected to  GPIO0
+ #define LED 2// LED connected to  GPIO2
 WiFiServer server(80);
  
 void setup() 
