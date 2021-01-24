@@ -1,6 +1,6 @@
 /*
- * This code is written by Divij Vignesh
- * Check out his channel StupidCreativity - https://www.youtube.com/stupidcreativity
+ * This code is written by Divij Vignesh 
+ * Check out his channel StupidCreativity - https://www.youtube.com/stupidcreativity 
 */
 #include <ESP8266WiFi.h>
 const char* ssid = "*****"; // replace your router or wifi SSID 
