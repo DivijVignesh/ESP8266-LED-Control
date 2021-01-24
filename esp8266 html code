@@ -37,10 +37,7 @@ void setup()
  
   // Print the IP address
   Serial.print("Use this URL to connect: ");
-  Serial.print("https://");
   Serial.print(WiFi.localIP());
-  Serial.println("/");
- 
 }
  
 void loop() 
